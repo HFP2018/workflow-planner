@@ -1,5 +1,8 @@
 import { DingTalkSettings } from './settings';
 
+// 判断是否在 Electron 环境中
+const isElectron = typeof window !== 'undefined' && !!(window as any).electronAPI;
+
 export async function sendDingTalkNotification(
   settings: DingTalkSettings,
   title: string,
@@ -9,7 +12,20 @@ export async function sendDingTalkNotification(
     return { success: false, error: '钉钉推送未启用或未配置Webhook' };
   }
 
+  const fullMessage = `## ${title}\n\n${message}`;
+
   try {
+    // Electron 桌面版：通过主进程 IPC 发送（绕过 CORS）
+    if (isElectron) {
+      const result = await (window as any).electronAPI.sendDingTalk({
+        webhookUrl: settings.webhookUrl,
+        secret: settings.secret || '',
+        message: fullMessage,
+      });
+      return result;
+    }
+
+    // 网页版：通过后端 API 中转
     const res = await fetch('/api/send-dingtalk', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

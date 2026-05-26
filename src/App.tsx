@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { HashRouter as BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { ToastProvider } from '@/components/ui/toast';
 import LoginPage from '@/pages/LoginPage';
